@@ -1,0 +1,11 @@
+[Unit]
+Description=Do It Yourself Adafruit IO sensors application 
+After=multi-user.target
+[Service]
+Type=idle
+ExecStart=/usr/bin/python3 /usr/local/aiosensors/aiosensors.py --g garage --d st7789
+# ExecStart=/usr/bin/python3 /usr/local/aiosensors/aiosensors.py --g garage --d sd1306
+# ExecStart=/usr/bin/python3 /usr/local/aiosensors/aiosensors.py --g garage --d NA
+[Install]
+WantedBy=multi-user.target
+
