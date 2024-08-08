@@ -4,8 +4,8 @@ After=multi-user.target
 [Service]
 Type=idle
 ExecStart=/usr/bin/python3 /usr/local/aiosensors/aiosensors.py --g garage --d st7789
-# ExecStart=/usr/bin/python3 /usr/local/aiosensors/aiosensors.py --g garage --d sd1306
-# ExecStart=/usr/bin/python3 /usr/local/aiosensors/aiosensors.py --g garage --d NA
+# ExecStart=/usr/bin/python3 /usr/local/aiosensors/aiosensors.py --g study --d st7789
+# ExecStart=/usr/bin/python3 /usr/local/aiosensors/aiosensors.py --g livingroom --d st7789
 [Install]
 WantedBy=multi-user.target
 
