@@ -40,6 +40,7 @@ class ConfigModel:
         parser = argparse.ArgumentParser('Command Line Parser')
         parser.add_argument('--g', help='MQTT feed group name')
         parser.add_argument('--d', help='Display type or NA')
+        parser.add_argument('--w', help='Outdoor weather')
         args = parser.parse_args()
 
         # command line args for the MQTT feed group name
@@ -53,5 +54,11 @@ class ConfigModel:
             self.logger.error("Terminating --Display not provided")
             exit()  # mandatory
         self.display_name = args.d
+
+        # command line args for the optional display device
+        if args.w is None:
+            self.weather_station = False
+            self.logger.info("Not a weather station")
+        self.weather_station = True
 
         self.logger.info('Group={0} Display={1}'.format(self.group, self.display_name))

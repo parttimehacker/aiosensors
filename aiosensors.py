@@ -26,6 +26,7 @@
 
 import time
 import logging.config
+import json
 
 # Import Adafruit IO MQTT client.
 from Adafruit_IO import MQTTClient
@@ -71,6 +72,8 @@ def connected(client):
     LOGGER.info('Connected to Adafruit.io')
     # Subscribe to changes on a group, `group_name`
     client.subscribe(CONFIG.group+".power")
+    if CONFIG.weather_station:
+        client.subscribe_weather("2734","current")
 
 def disconnected(client):
     """ Disconnected function will be called when the client disconnects."""
@@ -92,7 +95,24 @@ def message(client, topic_id, payload):
     # Message function will be called when a subscribed topic has a new value.
     # The topic_id parameter identifies the topic, and the payload parameter has
     # the new value.
-    LOGGER.info('Topic {0} received new value: {1}'.format(topic_id, payload))
+    if topic_id == CONFIG.group + "power":
+        LOGGER.info('Topic {0} received new value: {1}'.format(topic_id, payload))
+    else:
+        parseForecast(client, payload)
+
+def parseForecast(client,forecast_data):
+    """Parses and prints incoming forecast data
+    """
+    # incoming data is a utf-8 string, encode it as a json object
+    forecast = json.loads(forecast_data)
+    # Print out the forecast
+    try:
+        fahrenheit = 9.0 / 5.0 * forecast['temperature'] + 32
+        client.publish('temperature', fahrenheit, 'outside')
+    except:
+        LOGGER.info('Exception: MQTT Weather connection failed')
+
+
 
 if __name__ == '__main__':
 
@@ -120,7 +140,7 @@ if __name__ == '__main__':
     CPU_DISPLAY = True
 
     while True:
-        time.sleep(10)
+        time.sleep(60)
         try:
             SENSORS.collect_and_publish()
             DISPLAY.clear_display()
@@ -132,7 +152,7 @@ if __name__ == '__main__':
                 CPU_DISPLAY = False
             else:
                 DISPLAY.display_text(0, "Environment", fill="#00FF00")
-                msg = "TEMP:  {:.1f}".format(SENSORS.get_temperature())
+                msg = "TEMP:  {:.1f} F".format(SENSORS.get_temperature())
                 DISPLAY.display_text(1, msg)
                 msg = "HUMID: {:.1f} %".format(SENSORS.get_humidity())
                 DISPLAY.display_text(2, msg)
