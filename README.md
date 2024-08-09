@@ -21,9 +21,9 @@ This **Raspberry Pi** based application collects data from several sensors and p
 <!-- * [License](#license) -->
 ## General Information
 - *Provide general information about your project here.*
-  - This is one of several Python processes used in my home automation system (**DIYHA**). I've used OOP, MVC, and MTV concepts in my DIYHA system.
+  - This is one of several Python applications used in my home automation system (**DIYHA**). I've used OOP, MVC, and MTV concepts in my DIYHA system.
 - *What problem does it (intend to) solve?*
-  - I wanted to isolate the server information and status into a single process. The main python application subscribes to a **diy/system/who** topic and responds by turning on or off status updates.
+  - Two I2C based sensors collect environment data and publish several parameters.
 - *What is the purpose of your project?*
   - My home automation system contains environment sensors, motion sensors, LED clocks, light switches, emergency sirens, a django web server, interfaces to Adafruit.io and a mosquitto MQTT broker.
 - *Why did you undertake it?*
@@ -32,23 +32,21 @@ This **Raspberry Pi** based application collects data from several sensors and p
 ## Technologies Used
 - python=3.7.3
 - Adafruit-Blinka=7.1.0
-- paho-mqt=1.6.1
-- RPI.GPIO
 - digitalio
 - adafruit-circuitpython-rgb-display
 - python3-pil
+- adafruit-io
 
 ## Features
 List the ready features here:
-- Handles the basic **diy/system/who** function
-- Reports on status and diagnostic information for the host raspberry pi server.
+- Displays status and diagnostic information for the host raspberry pi server on an LCD display.
 - Code passes pylint with a score of 10.0
 ## Screenshots
 Not applicable.
 <!-- ![Example screenshot](./diyhadiagram.png)-->
 <!-- If you have screenshots you'd like to share, include them here. -->
 ## Architecture
-This is a application that collects data about the host and potenitally presents information on some type of I2C or SPI bus display device. It posts topic data to an MQTT broker and to a web server. It also uses threads to run time-based, standalone processes.
+This is a application that collects data about the host and potenitally presents information on some type of I2C or SPI bus display device. It posts topic data to an MQTT broker and to a web server. 
 <!-- 
 ![Example screenshot](./diyhadiagram.png)
 <!-- If you have screenshots you'd like to share, include them here. -->
@@ -63,23 +61,19 @@ cd aiosensors
 Note: The Raspberry Pi operating team made a change on pip installations prior to version 12 of Raspian.
 - Prior to Raspian 12
 ```
+sudo pip install psutil
 sudo pip install Adafruit-Blinka 
 sudo pip install adafruit-circuitpython-rgb-display
-sudo pip install paho-mqtt==1.6.1
-sudo pip install RPI.GPIO 
-sudo apt-get install python3-pil
-sudo pip install psutil
-sudo pip3 install adafruit-circuitpython-ssd1306
+sudo pip3 install adafruit-circuitpython-bme680 
+sudo pip3 install adafruit-circuitpython-veml7700 
 ```
 - Raspian 12 and later
 ```
+sudo pip install psutil --break-system-packages
 sudo pip install Adafruit-Blinka --break-system-packages
 sudo pip install adafruit-circuitpython-rgb-display --break-system-packages
-sudo pip install paho-mqtt==1.6.1 --break-system-packages
-sudo pip install RPI.GPIO --break-system-packages
-sudo apt-get install python3-pil --break-system-packages
-sudo pip install psutil --break-system-packages
-sudo pip3 install adafruit-circuitpython-ssd1306 --break-system-packages
+sudo pip3 install adafruit-circuitpython-bme680 --break-system-packages
+sudo pip3 install adafruit-circuitpython-veml7700 --break-system-packages
 ```
 <!--
 <div align="left">
@@ -91,10 +85,11 @@ You need to decide whether you want to manually run the application or have it s
 ### Manual or Command Prompt
 To manually run the application enter the following command (sudo may be required on your system)
 ```
-sudo python3 aiosensors.py --g GROUOP -d DISPLAY
+sudo python3 aiosensors.py --g GROUOP --d DISPLAY --w
 ```
 - GROUP : Data feeds use this arguement to identify feed membership and naming conventions are used to identify its location.
 - DISPLAY : An optional display type determines version support for ssd1306 and st7789 devices. NA is the default.
+- w : Boolean to indicate access to the Apple weather API based on location.
 ### Raspbian systemd Service
 First edit the **asset systemd service** and replace the MQTT broker, room values and django web server with their host names or IP addresse. A systemd install script will move files and enable the applicaiton via **systemctl** commands.
 - Run the script and provide the application name **asset** to setup systemd (the script uses a file name argument to create the service). 
