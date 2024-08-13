@@ -73,6 +73,7 @@ def connected(client):
     # Subscribe to changes on a group, `group_name`
     client.subscribe(CONFIG.group+".power")
     if CONFIG.weather_station:
+        print("subscribing to weather")
         client.subscribe_weather("2734","current")
 
 def disconnected(client):
@@ -106,9 +107,13 @@ def parseForecast(client,forecast_data):
     # incoming data is a utf-8 string, encode it as a json object
     forecast = json.loads(forecast_data)
     # Print out the forecast
+    # print("parsing weather")
+    # print(forecast_data)
     try:
         fahrenheit = 9.0 / 5.0 * forecast['temperature'] + 32
         client.publish('temperature', fahrenheit, 'outside')
+        # print(forecast['conditionCode'])
+        client.publish('conditions', forecast['conditionCode'], 'outside')
     except:
         LOGGER.info('Exception: MQTT Weather connection failed')
 
